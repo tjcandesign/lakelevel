@@ -5,67 +5,96 @@ import GenerationSchedulePanel from '@/components/GenerationSchedulePanel';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-slate-100 font-sans text-slate-900 pb-12">
-      <header className="bg-slate-900 text-white shadow-lg">
-        <div className="container mx-auto px-4 py-6 max-w-6xl">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white mb-2">
-            Norfork Lake Dashboard
-          </h1>
-          <p className="text-slate-400 text-sm md:text-base max-w-2xl">
-            Real-time water levels and projected power generation schedules for fishermen and boaters.
-          </p>
+    <div className="min-h-screen bg-black font-sans text-zinc-100 pb-12 selection:bg-blue-500/30">
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black pointer-events-none"></div>
+
+      <header className="relative z-10 border-b border-white/5 bg-black/50 backdrop-blur-xl sticky top-0">
+        <div className="container mx-auto px-4 py-6 max-w-5xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold tracking-tight text-white mb-0.5">
+                  Norfork Lake <span className="text-zinc-500">Dashboard</span>
+                </h1>
+                <p className="text-xs text-zinc-500 font-medium tracking-wide uppercase">
+                  Live Conditions & Forecast
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                Unofficial Tool
+              </span>
+            </div>
+          </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 max-w-6xl -mt-4">
-        {/* Lake Levels Section (Wide) */}
-        <section className="mb-0">
-          <div className="relative z-10">
+      <main className="relative z-10 container mx-auto px-4 max-w-5xl py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+          {/* Left Column: Lake & River Levels (Wider) */}
+          <div className="lg:col-span-12">
             <LakeLevelsPanel />
           </div>
-        </section>
 
-        {/* Schedule & Info Grid */}
-        <section className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
+          {/* Right Column: Schedule & Info */}
+          <div className="lg:col-span-8">
             <GenerationSchedulePanel />
           </div>
 
-          <div className="lg:col-span-1 space-y-6">
-            {/* About / Context Panel */}
-            <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-bold text-slate-800 mb-3">About Norfork Dam</h3>
-              <p className="text-sm text-slate-600 mb-4 leading-relaxed">
-                Norfork Dam has two hydroelectric generators. "Full generation" typically means around 80-92 MW of power, releasing approximately 6,000-7,200 CFS (cubic feet per second) of water.
-              </p>
-              <ul className="text-sm text-slate-600 space-y-2 list-disc list-inside bg-slate-50 p-3 rounded">
-                <li><strong>0 MW:</strong> No generation. Good for wading (check tailwater level).</li>
-                <li><strong>40-50 MW:</strong> One unit or partial load. Caution advised.</li>
-                <li><strong>80+ MW:</strong> Heavy flow. Boating only. Dangerous for wading.</li>
-              </ul>
+          <div className="lg:col-span-4 space-y-6">
+            {/* Quick Reference Card */}
+            <div className="bg-zinc-900 rounded-xl shadow-lg border border-white/10 p-6">
+              <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                <span className="w-1 h-1 rounded-full bg-zinc-500"></span>
+                Guidance
+              </h3>
+
+              <div className="space-y-6">
+                <div className="flex items-start space-x-4 group">
+                  <div className="w-2 h-2 mt-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] flex-shrink-0 group-hover:scale-125 transition-transform"></div>
+                  <div>
+                    <div className="text-sm font-bold text-zinc-200 group-hover:text-emerald-400 transition-colors">Wadeable (0 MW)</div>
+                    <p className="text-xs text-zinc-500 leading-relaxed mt-1">
+                      Safe for wading. Ideally tailwater &lt; 316.5ft.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4 group">
+                  <div className="w-2 h-2 mt-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)] flex-shrink-0 group-hover:scale-125 transition-transform"></div>
+                  <div>
+                    <div className="text-sm font-bold text-zinc-200 group-hover:text-amber-400 transition-colors">Caution (1-40 MW)</div>
+                    <p className="text-xs text-zinc-500 leading-relaxed mt-1">
+                      Modest current. Experienced waders only.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4 group">
+                  <div className="w-2 h-2 mt-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)] flex-shrink-0 group-hover:scale-125 transition-transform"></div>
+                  <div>
+                    <div className="text-sm font-bold text-zinc-200 group-hover:text-red-400 transition-colors">Dangerous (80+ MW)</div>
+                    <p className="text-xs text-zinc-500 leading-relaxed mt-1">
+                      High water. Boating only. Do not wade.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Disclaimer Mini-Panel */}
-            <div className="bg-amber-50 rounded-lg border border-amber-100 p-5">
-              <h4 className="text-amber-800 font-bold mb-2 text-sm uppercase tracking-wide">⚠️ Disclaimer</h4>
-              <p className="text-xs text-amber-900/80 leading-relaxed">
-                This unofficial tool aggregates public data from the US Army Corps of Engineers and Southwestern Power Administration.
-                <strong> Schedules are projections and can change without notice.</strong> Real-time demands may cause unscheduled releases.
-                Always verify conditions and wear a life jacket.
-              </p>
+            <div className="text-[10px] text-zinc-600 text-center px-4 leading-relaxed font-medium uppercase tracking-wide">
+              ⚠️ Verify official reports. Wear a life jacket.
             </div>
           </div>
-        </section>
+        </div>
       </main>
-
-      <footer className="mt-16 py-8 text-center text-slate-500 text-sm border-t border-slate-200">
-        <p>
-          Data sources: <a href="https://www.swl-wc.usace.army.mil/pages/data/tabular/htm/norfork.htm" target="_blank" className="underline hover:text-blue-600">USACE</a> &bull; <a href="https://www.energy.gov/swpa" target="_blank" className="underline hover:text-blue-600">SWPA</a>
-        </p>
-        <p className="mt-2 text-xs">
-          Not affiliated with any government agency. Use at your own risk.
-        </p>
-      </footer>
     </div>
   );
 }

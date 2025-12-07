@@ -25,9 +25,6 @@ export default function GenerationSchedulePanel() {
     useEffect(() => {
         setLoading(true);
         setError('');
-
-        // reset data while loading to show feedback
-        // but maybe keep old data? nah, clean slate is less confusing if day changes
         setData(null);
 
         fetch(`/api/norfork/schedule/${selectedDay}`)
@@ -40,113 +37,111 @@ export default function GenerationSchedulePanel() {
             .finally(() => setLoading(false));
     }, [selectedDay]);
 
-    // Helper to format hour 1-24 to 12h AM/PM
     const formatHour = (h: number) => {
-        const d = new Date();
-        d.setHours(h, 0, 0, 0); // "Hour Ending" usually means 1 = 01:00 AM, 24 = Midnight
-        // However, in generation schedules, '1' is hour ending at 0100.
-        // '24' is hour ending at 2400 (Midnight).
-        // Let's just format strictly.
         const ampm = h >= 12 && h < 24 ? 'PM' : 'AM';
         const displayH = h % 12 || 12;
-        // Special case: Hour 24 is Midnight (12 AM next day usually, or end of day)
         return `${displayH}:00 ${ampm}`;
     };
 
     const getStatusColor = (mw: number) => {
-        if (mw === 0) return 'bg-emerald-100 text-emerald-800 border-emerald-200'; // Safe/Wading
-        if (mw < 40) return 'bg-yellow-100 text-yellow-800 border-yellow-200'; // Partial
-        if (mw < 85) return 'bg-orange-100 text-orange-800 border-orange-200'; // High
-        return 'bg-red-100 text-red-800 border-red-200'; // Full Power (roughly 92ish)
+        if (mw === 0) return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/30';
+        if (mw < 40) return 'text-amber-400 bg-amber-400/10 border-amber-400/30';
+        if (mw < 85) return 'text-orange-400 bg-orange-400/10 border-orange-400/30';
+        return 'text-red-400 bg-red-400/10 border-red-400/30';
     };
 
-    const getStatusLabel = (mw: number) => {
-        if (mw === 0) return 'No Generation';
-        if (mw < 40) return 'Low Generation';
-        if (mw < 85) return 'Medium Generation';
-        return 'Full/High Generation';
+    // Generate a human-readable summary
+    const getForecastSummary = (schedule: typeof data.schedule) => {
+        if (!schedule || schedule.length === 0) return "No data available.";
+
+        const generations = schedule.filter(s => s.nfdMw > 0);
+        if (generations.length === 0) return "No generation projected. Excellent availability for wading.";
+        if (generations.length === 24) return "Continuous generation projected. Water will likely be high all day.";
+
+        // Find start time of generation
+        const firstGen = generations[0].hour;
+        const lastGen = generations[generations.length - 1].hour;
+
+        return `Generation projected from ${formatHour(firstGen)} to ${formatHour(lastGen)}. Be careful of rising water around ${formatHour(firstGen)}.`;
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden border border-slate-200 flex flex-col h-full">
-            <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
-                <h2 className="text-lg font-semibold text-slate-800">Generation Schedule (NFD)</h2>
-                <span className="text-xs text-slate-500 block leading-tight mt-1">
-                    Southwestern Power Administration (Projected)
-                </span>
+        <div className="bg-zinc-900 border border-white/10 rounded-xl overflow-hidden shadow-2xl flex flex-col h-full">
+            <div className="p-5 md:p-6 border-b border-white/5">
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+                    <span className="w-1.5 h-6 bg-amber-500 rounded-full mr-3 shadow-[0_0_10px_rgba(245,158,11,0.5)]"></span>
+                    Generation Forecast
+                </h2>
+
+                {/* Day Picker */}
+                <div className="flex space-x-2 overflow-x-auto pb-2 scrollbar-hide">
+                    {DAYS.map((day) => (
+                        <button
+                            key={day.key}
+                            onClick={() => setSelectedDay(day.key)}
+                            className={`
+                px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all border
+                ${selectedDay === day.key
+                                    ? 'bg-white text-black border-white shadow-lg'
+                                    : 'bg-transparent text-zinc-500 border-zinc-800 hover:text-zinc-300 hover:border-zinc-700'}
+                `}
+                        >
+                            {day.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
-            {/* Tabs */}
-            <div className="flex overflow-x-auto border-b border-slate-200 bg-white pb-px">
-                {DAYS.map((day) => (
-                    <button
-                        key={day.key}
-                        onClick={() => setSelectedDay(day.key)}
-                        className={`
-              flex-shrink-0 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors
-              ${selectedDay === day.key
-                                ? 'border-blue-600 text-blue-600 bg-blue-50/50'
-                                : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'}
-            `}
-                    >
-                        {day.label}
-                    </button>
-                ))}
-            </div>
-
-            <div className="flex-1 p-0 relative min-h-[300px]">
+            <div className="flex-1 relative min-h-[300px] bg-black/20">
                 {loading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10 transition-opacity">
-                        <div className="text-blue-600 font-medium animate-pulse">Fetching Schedule...</div>
+                    <div className="absolute inset-0 flex items-center justify-center backdrop-blur-sm z-10">
+                        <div className="text-blue-500 font-medium animate-pulse">Checking Forecast...</div>
                     </div>
                 )}
 
                 {error && !loading && (
-                    <div className="p-8 text-center">
-                        <div className="text-red-500 mb-2">⚠️ Could not load schedule</div>
-                        <div className="text-sm text-slate-500">{error}</div>
-                        <div className="mt-4 text-xs text-slate-400">
-                            This usually means the SWPA report for this day hasn't been published yet.
+                    <div className="p-8 text-center h-full flex flex-col items-center justify-center">
+                        <div className="text-zinc-700 mb-4 text-5xl opacity-50">📅</div>
+                        <div className="text-zinc-400 font-medium">Schedule Not Yet Published</div>
+                        <div className="text-xs text-zinc-600 mt-2 max-w-xs mx-auto">
+                            The SWPA usually publishes the report for {selectedDay} later in the day.
                         </div>
                     </div>
                 )}
 
                 {!error && data && (
                     <div>
-                        <div className="px-4 py-3 bg-blue-50/30 text-center border-b border-slate-100">
-                            <div className="text-sm font-bold text-slate-700 uppercase tracking-wide">
-                                {data.date || `Schedule for ${selectedDay}`}
-                            </div>
-                            <div className="text-xs text-slate-500 mt-1">
-                                Times are "Hour Ending" (Central Time)
-                            </div>
+                        {/* Forecast Summary Box */}
+                        <div className="bg-indigo-500/10 p-5 border-b border-indigo-500/10">
+                            <h3 className="text-indigo-400 font-bold text-[10px] uppercase tracking-widest mb-2">Outlook</h3>
+                            <p className="text-indigo-200 text-sm leading-relaxed border-l-2 border-indigo-500 pl-3">
+                                {getForecastSummary(data.schedule)}
+                            </p>
                         </div>
 
-                        <div className="grid grid-cols-1 divide-y divide-slate-100">
+                        <div className="divide-y divide-white/5">
                             {data.schedule.length === 0 ? (
-                                <div className="p-8 text-center text-slate-500">No data found in report.</div>
+                                <div className="p-8 text-center text-zinc-500">No data found in report.</div>
                             ) : (
                                 data.schedule.map((row) => (
-                                    <div key={row.hour} className="flex items-center px-4 py-3 hover:bg-slate-50 transition-colors">
-                                        <div className="w-24 flex-shrink-0">
-                                            <div className="font-mono font-medium text-slate-700">
-                                                HR {row.hour}
-                                            </div>
-                                            <div className="text-xs text-slate-400">
+                                    <div key={row.hour} className="flex items-center justify-between px-6 py-3.5 hover:bg-white/5 transition-colors group">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-16 text-xs font-bold text-zinc-500 font-mono">
                                                 {formatHour(row.hour)}
                                             </div>
+                                            {/* Timeline dot */}
+                                            <div className={`
+                                        w-2 h-2 rounded-full shadow-[0_0_8px_bg-current]
+                                        ${row.nfdMw > 0 ? 'bg-red-500 shadow-red-500/50' : 'bg-emerald-500 shadow-emerald-500/50'}
+                                    `}></div>
                                         </div>
 
-                                        <div className="flex-1 flex items-center justify-between">
-                                            <div className="font-bold text-xl text-slate-800">
-                                                {row.nfdMw} <span className="text-sm font-normal text-slate-500">MW</span>
-                                            </div>
-
+                                        <div className="flex items-center space-x-3">
                                             <div className={`
-                                        px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border
+                                        px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest border
                                         ${getStatusColor(row.nfdMw)}
                                     `}>
-                                                {getStatusLabel(row.nfdMw)}
+                                                {row.nfdMw === 0 ? 'Wadeable' : `${row.nfdMw} MW`}
                                             </div>
                                         </div>
                                     </div>
