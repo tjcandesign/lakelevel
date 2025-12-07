@@ -213,10 +213,17 @@ export default function LakeLevelsPanel() {
                                     </div>
                                 </div>
                                 <div>
-                                    <div className="text-xs text-blue-300 font-bold uppercase tracking-wider opacity-80 mb-1">River Depth</div>
+                                    <div className="text-xs text-blue-300 font-bold uppercase tracking-wider opacity-80 mb-1">Surface Elev (MSL)</div>
                                     <div className="text-3xl font-sans font-bold text-white tracking-tighter">
                                         {current.tailwater?.toFixed(2) || '-'} <span className="text-sm font-normal opacity-70">ft</span>
                                     </div>
+                                    {current.tailwater && (
+                                        <div className="mt-2 p-2 bg-black/20 rounded border border-blue-500/10 backdrop-blur-sm">
+                                            <div className="text-[10px] text-blue-200/70 leading-relaxed">
+                                                <span className="font-bold text-blue-200">Est. Rise:</span> +{(current.tailwater - 362.0).toFixed(2)} ft above low water.
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

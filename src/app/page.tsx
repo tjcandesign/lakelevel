@@ -57,7 +57,7 @@ export default function Home() {
                   <div>
                     <div className="text-sm font-bold text-zinc-200 group-hover:text-emerald-400 transition-colors">Wadeable (0 MW)</div>
                     <p className="text-xs text-zinc-500 leading-relaxed mt-1">
-                      Safe for wading. Ideally tailwater &lt; 316.5ft.
+                      Safe for wading. Ideally tailwater &lt; 362.5ft.
                     </p>
                   </div>
                 </div>
