@@ -15,6 +15,7 @@ import {
     ReferenceLine
 } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
+import ClientOnly from './ClientOnly';
 
 export default function LakeLevelsPanel() {
     const [data, setData] = useState<UsaceData | null>(null);
@@ -199,8 +200,8 @@ export default function LakeLevelsPanel() {
                                 <div className="flex items-center justify-between">
                                     <span className="text-xs font-bold uppercase tracking-wider text-blue-200">Current Status</span>
                                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border bg-black/40 ${cfs < 500 ? 'text-emerald-400 border-emerald-500/30' :
-                                            cfs < 3000 ? 'text-amber-400 border-amber-500/30' :
-                                                'text-red-400 border-red-500/30'
+                                        cfs < 3000 ? 'text-amber-400 border-amber-500/30' :
+                                            'text-red-400 border-red-500/30'
                                         }`}>
                                         {riverCondition}
                                     </span>
@@ -222,51 +223,53 @@ export default function LakeLevelsPanel() {
                 {/* Chart Section */}
                 <div className="h-[250px] w-full mt-8 pt-8 border-t border-white/5">
                     <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">48-Hour Level History</h3>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={chartData}>
-                            <defs>
-                                <linearGradient id="colorElev" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                                </linearGradient>
-                            </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                            <XAxis
-                                dataKey="time"
-                                stroke="#71717a"
-                                tick={{ fontSize: 10, fill: '#71717a' }}
-                                tickMargin={10}
-                                axisLine={false}
-                                interval="preserveStartEnd"
-                                minTickGap={30}
-                            />
-                            <YAxis
-                                domain={[minElev, maxElev]}
-                                stroke="#71717a"
-                                tick={{ fontSize: 10, fill: '#71717a' }}
-                                axisLine={false}
-                                tickFormatter={(value) => value.toFixed(1)}
-                                width={30}
-                            />
-                            <Tooltip
-                                contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', color: '#fff', fontSize: '12px', borderRadius: '8px' }}
-                                itemStyle={{ color: '#60a5fa' }}
-                                formatter={(val: number) => [val.toFixed(2) + ' ft', 'Elevation']}
-                                cursor={{ stroke: '#3b82f6', strokeWidth: 1 }}
-                                labelStyle={{ color: '#a1a1aa', marginBottom: '4px' }}
-                            />
-                            <ReferenceLine y={powerPool} stroke="#60a5fa" strokeDasharray="4 4" label={{ position: 'insideTopRight', value: 'Normal Pool', fill: '#60a5fa', fontSize: 10 }} />
-                            <Area
-                                type="monotone"
-                                dataKey="elevation"
-                                stroke="#3b82f6"
-                                strokeWidth={2}
-                                fillOpacity={1}
-                                fill="url(#colorElev)"
-                                animationDuration={1500}
-                            />
-                        </AreaChart>
-                    </ResponsiveContainer>
+                    <ClientOnly>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={chartData}>
+                                <defs>
+                                    <linearGradient id="colorElev" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                                <XAxis
+                                    dataKey="time"
+                                    stroke="#71717a"
+                                    tick={{ fontSize: 10, fill: '#71717a' }}
+                                    tickMargin={10}
+                                    axisLine={false}
+                                    interval="preserveStartEnd"
+                                    minTickGap={30}
+                                />
+                                <YAxis
+                                    domain={[minElev, maxElev]}
+                                    stroke="#71717a"
+                                    tick={{ fontSize: 10, fill: '#71717a' }}
+                                    axisLine={false}
+                                    tickFormatter={(value) => value.toFixed(1)}
+                                    width={30}
+                                />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', color: '#fff', fontSize: '12px', borderRadius: '8px' }}
+                                    itemStyle={{ color: '#60a5fa' }}
+                                    formatter={(val: number) => [val.toFixed(2) + ' ft', 'Elevation']}
+                                    cursor={{ stroke: '#3b82f6', strokeWidth: 1 }}
+                                    labelStyle={{ color: '#a1a1aa', marginBottom: '4px' }}
+                                />
+                                <ReferenceLine y={powerPool} stroke="#60a5fa" strokeDasharray="4 4" label={{ position: 'insideTopRight', value: 'Normal Pool', fill: '#60a5fa', fontSize: 10 }} />
+                                <Area
+                                    type="monotone"
+                                    dataKey="elevation"
+                                    stroke="#3b82f6"
+                                    strokeWidth={2}
+                                    fillOpacity={1}
+                                    fill="url(#colorElev)"
+                                    animationDuration={1500}
+                                />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </ClientOnly>
                 </div>
             </div>
 
