@@ -112,7 +112,7 @@ export default function LakeLevelsPanel() {
                     {/* Primary Stat: Elevation with Context */}
                     <div className="space-y-6">
                         <div>
-                            <div className="text-xs text-blue-400 font-bold uppercase tracking-widest mb-2">Current Elevation</div>
+                            <div className="text-xs text-blue-400 font-bold uppercase tracking-widest mb-2">Current Elevation <span className="text-zinc-500 font-medium normal-case tracking-normal ml-1">(at Norfork Dam)</span></div>
                             <div className="flex items-baseline space-x-3">
                                 <motion.span
                                     key={current.elevation}
@@ -178,7 +178,26 @@ export default function LakeLevelsPanel() {
 
                     {/* Secondary Stat: River Release */}
                     <div className="space-y-6">
-                        <div className="text-xs text-blue-400 font-bold uppercase tracking-widest mb-2">River Conditions (Tailwater)</div>
+                        <div className="mb-2">
+                            <div className="text-xs text-blue-400 font-bold uppercase tracking-widest">River Conditions (Tailwater)</div>
+                            {/* Animated Wave Graphic */}
+                            <div className="h-4 w-full overflow-hidden relative opacity-50 mt-1">
+                                <motion.div
+                                    animate={{ x: ["0%", "-50%"] }}
+                                    transition={{ repeat: Infinity, ease: "linear", duration: 4 }}
+                                    className="absolute top-0 left-0 h-full w-[200%] flex items-center"
+                                >
+                                    <svg className="w-full h-full text-blue-500" viewBox="0 0 1200 20" preserveAspectRatio="none">
+                                        <path
+                                            d="M0 10 Q 30 20 60 10 T 120 10 T 180 10 T 240 10 T 300 10 T 360 10 T 420 10 T 480 10 T 540 10 T 600 10 T 660 10 T 720 10 T 780 10 T 840 10 T 900 10 T 960 10 T 1020 10 T 1080 10 T 1140 10 T 1200 10"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                        />
+                                    </svg>
+                                </motion.div>
+                            </div>
+                        </div>
 
                         <div className={`p-6 rounded-xl border ${riverStyles} relative overflow-hidden flex flex-col justify-between h-full`}>
                             <div className="relative z-10 grid grid-cols-2 gap-6">

@@ -12,13 +12,8 @@ export default function Home() {
         <div className="container mx-auto px-4 py-6 max-w-5xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
               <div>
-                <h1 className="text-xl font-bold tracking-tight text-white mb-0.5">
+                <h1 className="text-3xl font-bold tracking-tight text-white mb-0.5">
                   Norfork Lake <span className="text-zinc-500">Dashboard</span>
                 </h1>
                 <p className="text-xs text-zinc-500 font-medium tracking-wide uppercase">
