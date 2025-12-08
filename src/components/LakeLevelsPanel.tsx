@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -16,6 +15,7 @@ import {
 } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
 import ClientOnly from './ClientOnly';
+import VisualDam from './VisualDam';
 
 export default function LakeLevelsPanel() {
     const [data, setData] = useState<UsaceData | null>(null);
@@ -85,8 +85,17 @@ export default function LakeLevelsPanel() {
         tailwater: h.tailwater
     }));
 
-    const minElev = Math.min(...chartData.map(d => d.elevation), powerPool) - 0.5;
-    const maxElev = Math.max(...chartData.map(d => d.elevation), powerPool) + 0.5;
+    // Calculate domain for chart to zoom in on the specific range
+    const measuredMin = Math.min(...chartData.map(d => d.elevation));
+    const measuredMax = Math.max(...chartData.map(d => d.elevation));
+    const spread = measuredMax - measuredMin;
+
+    // Dynamic padding based on how flat the line is
+    const padding = spread < 0.2 ? 0.1 : spread < 1 ? 0.2 : 0.5;
+
+    // Ensure we don't zoom in SO close that we lose context of the Power Pool if it's nearby
+    const minElev = measuredMin - padding;
+    const maxElev = measuredMax + padding;
 
     return (
         <motion.div
@@ -136,11 +145,30 @@ export default function LakeLevelsPanel() {
                             </div>
                             <div className="text-right">
                                 <div className="text-xs text-zinc-500 uppercase tracking-wide">Trend (6h)</div>
-                                <div className="text-lg font-bold text-white flex items-center justify-end gap-1">
-                                    {trendLabel}
-                                    <span className={trend > 0 ? "text-blue-400" : "text-amber-400"}>
-                                        {trendLabel === 'Rising' ? '↑' : trendLabel === 'Falling' ? '↓' : '→'}
-                                    </span>
+                                <div className="flex items-center justify-end gap-2">
+                                    <div className="text-lg font-bold text-white">{trendLabel}</div>
+
+                                    {/* Enhanced Animated Arrow */}
+                                    <div className={`flex items-center justify-center w-8 h-8 rounded-full border bg-black/40 ${trend > 0 ? 'text-blue-400 border-blue-500/30' :
+                                            trend < 0 ? 'text-amber-400 border-amber-500/30' : 'text-zinc-500 border-zinc-700'
+                                        }`}>
+                                        <motion.div
+                                            animate={{
+                                                y: trendLabel === 'Rising' ? [2, -2, 2] : trendLabel === 'Falling' ? [-2, 2, -2] : 0,
+                                            }}
+                                            transition={{
+                                                repeat: Infinity,
+                                                duration: 1.5,
+                                                ease: "easeInOut"
+                                            }}
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                {trendLabel === 'Rising' && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />}
+                                                {trendLabel === 'Falling' && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />}
+                                                {trendLabel === 'Steady' && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 12h14" />}
+                                            </svg>
+                                        </motion.div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -161,7 +189,7 @@ export default function LakeLevelsPanel() {
                                     <div className="absolute right-0 top-0 bottom-0 w-2 bg-white/50 blur-[2px]"></div>
                                 </motion.div>
 
-                                {/* Range Backgrounds (Optional, keep subtle) */}
+                                {/* Range Backgrounds */}
                                 <div className="absolute inset-0 flex">
                                     <div className="h-full bg-blue-900/20" style={{ width: `${normalPos}%` }}></div>
                                     <div className="h-full bg-amber-900/20" style={{ flex: 1 }}></div>
@@ -173,6 +201,17 @@ export default function LakeLevelsPanel() {
                                 <span className="text-white transform -translate-x-1/2" style={{ marginLeft: `${normalPos}%` }}>Normal ({powerPool})</span>
                                 <span>Flood ({floodPool})</span>
                             </div>
+                        </div>
+
+                        {/* Visual Dam Illustration */}
+                        <div className="mt-8">
+                            <VisualDam
+                                elevation={current.elevation}
+                                powerPool={powerPool}
+                                floodPool={floodPool}
+                                cfs={cfs}
+                                tailwater={current.tailwater || 362}
+                            />
                         </div>
                     </div>
 
@@ -310,7 +349,7 @@ export default function LakeLevelsPanel() {
                     onClick={() => setShowDetails(!showDetails)}
                     className="w-full py-3 text-xs uppercase tracking-widest text-zinc-500 hover:text-white hover:bg-white/5 transition-colors font-medium flex items-center justify-center gap-2"
                 >
-                    {showDetails ? 'Hide Past Data' : 'View Data Table'}
+                    {showDetails ? 'Hide Past Data' : 'View Data Table Table'}
                     <span className="text-[10px]">{showDetails ? '−' : '+'}</span>
                 </button>
 
