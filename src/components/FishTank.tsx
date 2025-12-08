@@ -25,13 +25,13 @@ export default function FishTank() {
 
     // Initial Spawn
     useEffect(() => {
-        const initialFishes: Fish[] = Array.from({ length: 8 }).map((_, i) => ({
+        const initialFishes: Fish[] = Array.from({ length: 4 }).map((_, i) => ({
             id: i,
             type: FISH_TYPES[i % FISH_TYPES.length],
             x: Math.random() * 100,
             y: Math.random() * 100,
-            vx: (Math.random() - 0.5) * 0.2, // Slow random movement
-            vy: (Math.random() - 0.5) * 0.1,
+            vx: (Math.random() - 0.5) * 0.1, // Slower random movement
+            vy: (Math.random() - 0.5) * 0.05,
             scale: 0.5 + Math.random() * 0.5,
             flip: Math.random() > 0.5
         }));
@@ -51,18 +51,18 @@ export default function FishTank() {
                     const dist = Math.sqrt(dx * dx + dy * dy);
 
                     if (dist < 40) { // Attraction range (percent)
-                        vx += (dx / dist) * 0.05; // Accelerate towards mouse
-                        vy += (dy / dist) * 0.05;
+                        vx += (dx / dist) * 0.02; // Reduced acceleration
+                        vy += (dy / dist) * 0.02;
                     }
                 }
 
                 // 2. Random Wandering
-                vx += (Math.random() - 0.5) * 0.02;
-                vy += (Math.random() - 0.5) * 0.01;
+                vx += (Math.random() - 0.5) * 0.01;
+                vy += (Math.random() - 0.5) * 0.005;
 
-                // 3. Friction/Speed Limit
+                // 3. Friction/Speed Limit (HALVED)
                 const speed = Math.sqrt(vx * vx + vy * vy);
-                const maxSpeed = mouseRef.current ? 0.8 : 0.3;
+                const maxSpeed = mouseRef.current ? 0.4 : 0.15;
                 if (speed > maxSpeed) {
                     vx = (vx / speed) * maxSpeed;
                     vy = (vy / speed) * maxSpeed;
