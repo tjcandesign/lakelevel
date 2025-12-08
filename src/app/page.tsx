@@ -11,12 +11,13 @@ export default function Home() {
       <header className="relative z-10 border-b border-white/5 bg-black/50 backdrop-blur-xl sticky top-0">
         <div className="container mx-auto px-4 py-6 max-w-5xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight text-white mb-0.5">
-                  Norfork Lake <span className="text-zinc-500">Dashboard</span>
-                </h1>
-                <p className="text-xs text-zinc-500 font-medium tracking-wide uppercase">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-mono font-black uppercase tracking-tighter text-white mb-2">
+                Norfork Lake <span className="text-zinc-600 block md:inline md:ml-4">Dashboard</span>
+              </h1>
+              <div className="flex items-center gap-3">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <p className="text-xs text-zinc-400 font-mono tracking-widest uppercase">
                   Live Conditions & Forecast
                 </p>
               </div>
