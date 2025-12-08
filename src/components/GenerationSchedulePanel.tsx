@@ -149,8 +149,14 @@ export default function GenerationSchedulePanel() {
                     {!error && data && !loading && (
                         <div key="content">
                             {/* Forecast Summary Box */}
+                            {/* Forecast Summary Box */}
                             <div className="bg-indigo-500/10 p-5 border-b border-indigo-500/10">
-                                <h3 className="text-indigo-400 font-bold text-[10px] uppercase tracking-widest mb-2">Outlook</h3>
+                                <div className="flex justify-between items-center mb-2">
+                                    <h3 className="text-indigo-400 font-bold text-[10px] uppercase tracking-widest">Outlook</h3>
+                                    <h4 className="text-[10px] font-bold text-indigo-300/70 uppercase tracking-widest bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20">
+                                        {data.date}
+                                    </h4>
+                                </div>
                                 <p className="text-indigo-200 text-sm leading-relaxed border-l-2 border-indigo-500 pl-3">
                                     {getForecastSummary(data.schedule)}
                                 </p>
