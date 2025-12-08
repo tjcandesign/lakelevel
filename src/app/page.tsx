@@ -84,7 +84,56 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="text-[10px] text-zinc-600 text-center px-4 leading-relaxed font-medium uppercase tracking-wide">
+            {/* Data Source Footer */}
+            <div className="mt-12 pt-8 border-t border-white/5">
+              <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6 text-center">About The Data Sources</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* SWPA Card */}
+                <div className="bg-zinc-900/50 border border-white/5 rounded-xl p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-bold text-white">Southwestern Power Admin (SWPA)</h4>
+                    <span className="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-1 rounded border border-blue-500/20 uppercase tracking-wider">Generation</span>
+                  </div>
+                  <p className="text-xs text-zinc-400 leading-relaxed mb-4">
+                    One of four Power Marketing Administrations in the U.S., SWPA markets cost-based, wholesale power generated from 24 Federal hydropower projects owned by the U.S. Army Corps of Engineers.
+                  </p>
+                  <div className="text-[10px] text-zinc-500 mb-4">
+                    <strong className="text-zinc-400">Territory:</strong> AR, KS, LA, MO, OK, TX.
+                  </div>
+                  <a
+                    href="https://www.energy.gov/swpa/southwestern-power-administration"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors group"
+                  >
+                    Visit SWPA Website
+                    <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+                  </a>
+                </div>
+
+                {/* USACE Card */}
+                <div className="bg-zinc-900/50 border border-white/5 rounded-xl p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-bold text-white">US Army Corps of Engineers</h4>
+                    <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded border border-emerald-500/20 uppercase tracking-wider">Lake Levels</span>
+                  </div>
+                  <p className="text-xs text-zinc-400 leading-relaxed mb-4">
+                    The Little Rock District Water Control manages the reservoir levels and releases. Data covers elevation, tailwater depth, and total release cubic feet per second (CFS).
+                  </p>
+                  <a
+                    href="https://www.swl-wc.usace.army.mil/pages/data/tabular/htm/norfork.htm"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition-colors group"
+                  >
+                    View Raw USACE Data
+                    <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-[10px] text-zinc-600 text-center px-4 leading-relaxed font-medium uppercase tracking-wide mt-12 mb-4">
               ⚠️ Verify official reports. Wear a life jacket.
             </div>
           </div>

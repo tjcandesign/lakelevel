@@ -198,6 +198,11 @@ export default function GenerationSchedulePanel() {
                     )}
                 </AnimatePresence>
             </div>
+            <div className="mt-4 p-3 bg-blue-500/5 rounded-lg border border-blue-500/10">
+                <p className="text-[10px] text-zinc-400 leading-relaxed text-center">
+                    <span className="font-bold text-blue-400">Note:</span> Scheduled generation is subject to change based on power demand. USACE may also schedule releases for non-hydropower purposes.
+                </p>
+            </div>
         </motion.div>
     );
 }
