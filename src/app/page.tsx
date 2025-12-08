@@ -87,7 +87,7 @@ export default function Home() {
             {/* Data Source Footer */}
             <div className="mt-12 pt-8 border-t border-white/5">
               <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6 text-center">About The Data Sources</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 max-w-2xl mx-auto">
                 {/* SWPA Card */}
                 <div className="bg-zinc-900/50 border border-white/5 rounded-xl p-6">
                   <div className="flex items-center justify-between mb-3">
