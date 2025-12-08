@@ -23,6 +23,7 @@ export default function LakeLevelsPanel() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [showDetails, setShowDetails] = useState(false);
+    const [scoopTrigger, setScoopTrigger] = useState(0);
 
     useEffect(() => {
         // Force dynamic fetch by appending timestamp if needed, but the API route is now dynamic.
@@ -153,7 +154,7 @@ export default function LakeLevelsPanel() {
 
                                     {/* Enhanced Animated Arrow */}
                                     <div className={`flex items-center justify-center w-8 h-8 rounded-full border bg-black/40 ${trend > 0 ? 'text-blue-400 border-blue-500/30' :
-                                            trend < 0 ? 'text-amber-400 border-amber-500/30' : 'text-zinc-500 border-zinc-700'
+                                        trend < 0 ? 'text-amber-400 border-amber-500/30' : 'text-zinc-500 border-zinc-700'
                                         }`}>
                                         <motion.div
                                             animate={{
@@ -226,7 +227,7 @@ export default function LakeLevelsPanel() {
 
                         <div className={`p-6 rounded-xl border ${riverStyles} relative overflow-hidden flex flex-col justify-between h-full`}>
                             {/* Interactive Fish Background */}
-                            <FishTank />
+                            <FishTank scoopTrigger={scoopTrigger} />
 
                             <div className="relative z-10 grid grid-cols-2 gap-6">
                                 <div>
@@ -258,10 +259,12 @@ export default function LakeLevelsPanel() {
                             <div className="relative z-10 mt-6 pt-6 border-t border-blue-500/20">
                                 <div className="flex items-center justify-between">
                                     <span className="text-xs font-bold uppercase tracking-wider text-blue-200">Current Status</span>
-                                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border bg-black/40 ${cfs < 500 ? 'text-emerald-400 border-emerald-500/30' :
-                                        cfs < 3000 ? 'text-amber-400 border-amber-500/30' :
-                                            'text-red-400 border-red-500/30'
-                                        }`}>
+                                    <span
+                                        onMouseEnter={() => setScoopTrigger(c => c + 1)}
+                                        className={`cursor-pointer transition-transform hover:scale-105 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border bg-black/40 ${cfs < 500 ? 'text-emerald-400 border-emerald-500/30' :
+                                            cfs < 3000 ? 'text-amber-400 border-amber-500/30' :
+                                                'text-red-400 border-red-500/30'
+                                            }`}>
                                         {riverCondition}
                                     </span>
                                 </div>
