@@ -12,8 +12,8 @@ export default function Home() {
         <div className="container mx-auto px-4 py-6 max-w-5xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-4xl md:text-5xl font-mono font-black uppercase tracking-tighter text-white mb-2">
-                Norfork Lake <span className="text-zinc-600 block md:inline md:ml-4">Dashboard</span>
+              <h1 className="text-4xl md:text-5xl font-sans font-black uppercase tracking-[-0.02em] text-white mb-2">
+                Norfork Lake <span className="text-zinc-600 block md:inline md:ml-4">Level</span>
               </h1>
               <div className="flex items-center gap-3">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
