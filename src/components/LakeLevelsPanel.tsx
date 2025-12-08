@@ -16,6 +16,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import ClientOnly from './ClientOnly';
 import VisualDam from './VisualDam';
+import FishTank from './FishTank';
 
 export default function LakeLevelsPanel() {
     const [data, setData] = useState<UsaceData | null>(null);
@@ -24,6 +25,7 @@ export default function LakeLevelsPanel() {
     const [showDetails, setShowDetails] = useState(false);
 
     useEffect(() => {
+        // Force dynamic fetch by appending timestamp if needed, but the API route is now dynamic.
         fetch('/api/norfork/lake')
             .then((res) => {
                 if (!res.ok) throw new Error('Failed to load');
@@ -82,7 +84,8 @@ export default function LakeLevelsPanel() {
         time: format(new Date(h.timestamp), 'h a'),
         fullDate: h.timestamp,
         elevation: h.elevation,
-        tailwater: h.tailwater
+        tailwater: h.tailwater,
+        tooltipDate: format(new Date(h.timestamp), 'MMM d, h:mm a')
     }));
 
     // Calculate domain for chart to zoom in on the specific range
@@ -219,26 +222,12 @@ export default function LakeLevelsPanel() {
                     <div className="space-y-6">
                         <div className="mb-2">
                             <div className="text-xs text-blue-400 font-bold uppercase tracking-widest">River Conditions (Tailwater)</div>
-                            {/* Animated Wave Graphic */}
-                            <div className="h-4 w-full overflow-hidden relative opacity-50 mt-1">
-                                <motion.div
-                                    animate={{ x: ["0%", "-50%"] }}
-                                    transition={{ repeat: Infinity, ease: "linear", duration: 4 }}
-                                    className="absolute top-0 left-0 h-full w-[200%] flex items-center"
-                                >
-                                    <svg className="w-full h-full text-blue-500" viewBox="0 0 1200 20" preserveAspectRatio="none">
-                                        <path
-                                            d="M0 10 Q 30 20 60 10 T 120 10 T 180 10 T 240 10 T 300 10 T 360 10 T 420 10 T 480 10 T 540 10 T 600 10 T 660 10 T 720 10 T 780 10 T 840 10 T 900 10 T 960 10 T 1020 10 T 1080 10 T 1140 10 T 1200 10"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                        />
-                                    </svg>
-                                </motion.div>
-                            </div>
                         </div>
 
                         <div className={`p-6 rounded-xl border ${riverStyles} relative overflow-hidden flex flex-col justify-between h-full`}>
+                            {/* Interactive Fish Background */}
+                            <FishTank />
+
                             <div className="relative z-10 grid grid-cols-2 gap-6">
                                 <div>
                                     <div className="text-xs text-blue-300 font-bold uppercase tracking-wider opacity-80 mb-1">Release Rate</div>
@@ -278,12 +267,12 @@ export default function LakeLevelsPanel() {
                                 </div>
                             </div>
 
-                            {/* Animated background pulse for flow */}
+                            {/* Animated background pulse for flow (Supplementary) */}
                             {cfs > 100 && (
                                 <motion.div
                                     animate={{ opacity: [0.05, 0.15, 0.05] }}
                                     transition={{ duration: 3, repeat: Infinity }}
-                                    className="absolute inset-0 bg-blue-500 opacity-5"
+                                    className="absolute inset-0 bg-blue-500 opacity-5 pointer-events-none"
                                 />
                             )}
                         </div>
@@ -298,7 +287,7 @@ export default function LakeLevelsPanel() {
                             <AreaChart data={chartData}>
                                 <defs>
                                     <linearGradient id="colorElev" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity="0.3" />
                                         <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
@@ -324,6 +313,12 @@ export default function LakeLevelsPanel() {
                                     contentStyle={{ backgroundColor: '#09090b', borderColor: '#27272a', color: '#fff', fontSize: '12px', borderRadius: '8px' }}
                                     itemStyle={{ color: '#60a5fa' }}
                                     formatter={(val: number) => [val.toFixed(2) + ' ft', 'Elevation']}
+                                    labelFormatter={(label, payload) => {
+                                        if (payload && payload.length > 0 && payload[0].payload) {
+                                            return payload[0].payload.tooltipDate;
+                                        }
+                                        return label;
+                                    }}
                                     cursor={{ stroke: '#3b82f6', strokeWidth: 1 }}
                                     labelStyle={{ color: '#a1a1aa', marginBottom: '4px' }}
                                 />
@@ -349,7 +344,7 @@ export default function LakeLevelsPanel() {
                     onClick={() => setShowDetails(!showDetails)}
                     className="w-full py-3 text-xs uppercase tracking-widest text-zinc-500 hover:text-white hover:bg-white/5 transition-colors font-medium flex items-center justify-center gap-2"
                 >
-                    {showDetails ? 'Hide Past Data' : 'View Data Table Table'}
+                    {showDetails ? 'Hide Past Data' : 'View Data Table'}
                     <span className="text-[10px]">{showDetails ? '−' : '+'}</span>
                 </button>
 
