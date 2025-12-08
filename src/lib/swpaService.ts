@@ -27,20 +27,29 @@ export async function fetchSwpaSchedule(day: string): Promise<SwpaSchedule> {
     const lines = content.split('\n');
 
     // 1. Find the Date 
-    // Header often looks like: "WEDNESDAY    DECEMBER 03, 2025"
-    // It's usually near the top.
     let dateStr = '';
-    // Try to find a line with the day name
     const dayNameRegex = new RegExp(`${dayKey}\\w*`, 'i');
 
     for (let i = 0; i < 20; i++) { // search first 20 lines
         if (lines[i] && lines[i].match(dayNameRegex)) {
             // Verify it has a month/year looking thing
             if (lines[i].match(/\d{4}/)) {
-                dateStr = lines[i].trim();
+                dateStr = lines[i];
                 break;
             }
         }
+    }
+
+    // Clean the date string
+    // The line might be: "PROJECTED LOADING SCHEDULE   SUNDAY   DECEMBER 07, 2025   CALICO ROCK TEMP: N/A"
+    if (dateStr) {
+        dateStr = dateStr
+            .replace(/PROJECTED LOADING SCHEDULE/i, '')
+            .replace(/CALICO ROCK.*/i, '')
+            .replace(/TEMP:.*/i, '')
+            .replace(/EST. SYSTEM PEAK.*/i, '')
+            .replace(/\s+/g, ' ') // collapse multiple spaces
+            .trim();
     }
 
     // 2. Find the "PROJECTED LOADING SCHEDULE" section
@@ -57,7 +66,6 @@ export async function fetchSwpaSchedule(day: string): Promise<SwpaSchedule> {
     }
 
     // 3. Find Header Row with "NFD"
-    // It should be shortly after the section title
     let headerRowIndex = -1;
     let nfdColIndex = -1;
 
@@ -66,13 +74,6 @@ export async function fetchSwpaSchedule(day: string): Promise<SwpaSchedule> {
         if (lines[i] && lines[i].includes('NFD')) {
             headerRowIndex = i;
             // Calculate column index.
-            // This is fixed width text. We need to be careful.
-            // Strategy: Find "NFD" in the string, and use that character position approx range
-            // to pull values from subsequent lines.
-            // Or split by whitespace and find the index in the array?
-            // Splitting by whitespace is risky if some cols are empty (blank), but 
-            // usually this table is full of numbers. Let's try to map character positions.
-
             nfdColIndex = lines[i].indexOf('NFD');
             break;
         }
@@ -83,7 +84,6 @@ export async function fetchSwpaSchedule(day: string): Promise<SwpaSchedule> {
     }
 
     // 4. Parse Hourly Rows
-    // We expect rows starting with "1", "2", ... "24" (HR column)
     const schedule: HourlyGeneration[] = [];
 
     // We scan lines after the header
@@ -97,26 +97,12 @@ export async function fetchSwpaSchedule(day: string): Promise<SwpaSchedule> {
         }
 
         // Check if line starts with a number 1-24
-        // The line usually starts with the Hour number
         const match = trimmed.match(/^(\d{1,2})\s+/);
         if (match) {
             const hour = parseInt(match[1]);
             if (hour >= 1 && hour <= 24) {
                 // Extract the value at the NFD position
                 // NFD is 3 chars wide. Let's look at the substring around nfdColIndex.
-                // We'll take a safe window, e.g., index - 2 to index + 5
-                // Then trim and parse.
-
-                // It's safer to just split the line by whitespace if we confirm headers align.
-                // BUT strict alignment is better:
-                // Let's assume the value is right below the 'NFD' header.
-                // The value might be '0', '40', '92'.
-                // We grab a substring.
-
-                // Header: ...   BSD   NFD   GFD ...
-                // Row:    ...    0     0     50 ...
-                // The number usually aligns right or center under the header. 
-
                 const valSubstr = line.substring(nfdColIndex - 2, nfdColIndex + 5).trim();
                 const val = parseInt(valSubstr);
 
