@@ -16,39 +16,21 @@ export default function VisualDam({ elevation, powerPool, floodPool, cfs, tailwa
     // Dam wall height: 200 units.
     // Base 510 -> 0 units (bottom)
     // Flood 580 -> 180 units (near top)
+
+    // Scale factor: (val - 500) * 2.5 approximately
     const scaleY = (val: number) => Math.min(190, Math.max(10, (val - 500) * 2.5));
 
     const lakeHeight = scaleY(elevation);
     const powerPoolHeight = scaleY(powerPool);
 
     // Tailwater normalization (Base ~362)
+    // 362 -> 10 units high
+    // 375 -> 50 units high
     const tailHeight = Math.min(80, Math.max(10, (tailwater - 355) * 3));
 
-    // Flow intensity
+    // Flow intensity (for animation)
     const isFlowing = cfs > 0;
-    const flowSpeed = Math.max(0.5, 2 - (cfs / 10000)); // Animation duration
-
-    // Wave Generation for River
-    // Base amplitude on CFS: 0 -> 0, 10000 -> 8
-    const waveAmp = cfs > 0 ? Math.min(8, Math.max(1, cfs / 800)) : 0;
-
-    // Construct a long repeating sine wave path
-    // We'll translate this horizontally
-    // Width needs to cover ~200px + buffer. Let's do 400px.
-    // Segment width: 20px
-    let d = `M 0 0`;
-    for (let i = 0; i < 30; i++) {
-        const x = (i + 1) * 20;
-        // Alternating up/down for Sine approximation using Quadratic Beziers
-        // Q controlPointX controlPointY endX endY
-        // For simple smooth wave: T is shortcut for symmetric quadratic
-        // First curve: Q 10 -amp 20 0
-        if (i === 0) d += ` Q 10 ${-waveAmp} 20 0`;
-        else d += ` T ${x} 0`;
-    }
-    // Close the shape to fill it
-    d += ` V ${tailHeight} H 0 Z`;
-
+    const flowSpeed = Math.max(0.2, 2 - (cfs / 5000)); // faster = lower duration
 
     return (
         <div className="relative w-full h-[220px] bg-zinc-900/50 rounded-xl border border-white/5 overflow-hidden flex flex-col items-center justify-center p-4">
@@ -65,6 +47,9 @@ export default function VisualDam({ elevation, powerPool, floodPool, cfs, tailwa
                         <stop offset="0%" stopColor="#10b981" stopOpacity="0.8" />
                         <stop offset="100%" stopColor="#059669" stopOpacity="0.6" />
                     </linearGradient>
+                    <pattern id="flowPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                        <circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.3)" />
+                    </pattern>
                 </defs>
 
                 {/* Lake Water */}
@@ -131,24 +116,44 @@ export default function VisualDam({ elevation, powerPool, floodPool, cfs, tailwa
                 {/* The Dam Structure (Trapezoid) */}
                 <path d="M 190 200 L 190 10 L 210 10 L 240 200 Z" fill="#3f3f46" stroke="#52525b" strokeWidth="1" />
 
-                {/* River Water (Tailwater) - Using SVG Wave Path */}
-                <g transform={`translate(240, ${200 - tailHeight})`}>
-                    <defs>
-                        <clipPath id="riverClip">
-                            <rect x="0" y="-20" width="160" height={tailHeight + 20} />
-                        </clipPath>
-                    </defs>
+                {/* River Water (Tailwater) */}
+                <motion.rect
+                    initial={{ height: 10, y: 190 }}
+                    animate={{ height: tailHeight, y: 200 - tailHeight }}
+                    transition={{ duration: 1 }}
+                    x="240"
+                    y={200 - tailHeight}
+                    width="160"
+                    height={tailHeight}
+                    fill="url(#riverGradient)"
+                />
 
-                    {/* We render the wave path twice and animate x to create loop */}
-                    {/* Actually, framer motion x animation on the path itself */}
-                    <motion.path
-                        d={d}
-                        fill="url(#riverGradient)"
-                        animate={{ x: [-40, 0] }} // Cycle through 2 wave periods (20px * 2)
-                        transition={{ repeat: Infinity, ease: "linear", duration: flowSpeed }}
-                        clipPath="url(#riverClip)"
-                    />
-                </g>
+                {/* Flow Animation (if generating) */}
+                {isFlowing && (
+                    <>
+                        {/* Turbulent water exit */}
+                        <motion.circle
+                            cx="240"
+                            cy={200 - tailHeight / 2}
+                            r={tailHeight / 2}
+                            fill="white"
+                            opacity="0.2"
+                            animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0, 0.2] }}
+                            transition={{ repeat: Infinity, duration: 1 }}
+                        />
+
+                        {/* Moving particles in river */}
+                        <motion.rect
+                            x="240"
+                            y={200 - tailHeight}
+                            width="160"
+                            height={tailHeight}
+                            fill="url(#flowPattern)"
+                            animate={{ x: [-20, 0] }}
+                            transition={{ repeat: Infinity, duration: flowSpeed, ease: "linear" }}
+                        />
+                    </>
+                )}
 
                 {/* Ground Line */}
                 <line x1="0" y1="200" x2="400" y2="200" stroke="#71717a" strokeWidth="2" />
