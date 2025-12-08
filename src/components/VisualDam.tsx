@@ -62,6 +62,46 @@ export default function VisualDam({ elevation, powerPool, floodPool, cfs, tailwa
                     fill="url(#waterGradient)"
                 />
 
+                {/* Depth Indicator (Inside Water) - Only show if enough depth */}
+                {lakeHeight > 40 && (
+                    <motion.g
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1, duration: 0.5 }}
+                    >
+                        {/* Vertical Arrow Line */}
+                        <line
+                            x1="95"
+                            y1={200 - lakeHeight + 10}
+                            x2="95"
+                            y2={190}
+                            stroke="white"
+                            strokeWidth="1"
+                            opacity="0.5"
+                            strokeDasharray="2 2"
+                        />
+                        {/* Top Arrowhead */}
+                        <path d="M 95,190 L 92,185 M 95,190 L 98,185" stroke="white" strokeWidth="1" opacity="0.5" fill="none" transform={`translate(0, -${lakeHeight - 20})`} />
+
+                        {/* Bottom Arrowhead */}
+                        <path d="M 95,190 L 92,185 M 95,190 L 98,185" stroke="white" strokeWidth="1" opacity="0.5" fill="none" />
+
+                        {/* Label */}
+                        <rect x="65" y={200 - lakeHeight / 2 - 8} width="60" height="16" rx="4" fill="rgba(0,0,0,0.3)" />
+                        <text
+                            x="95"
+                            y={200 - lakeHeight / 2 + 4}
+                            textAnchor="middle"
+                            fill="white"
+                            fontSize="10"
+                            fontWeight="bold"
+                            className="font-mono"
+                        >
+                            {elevation.toFixed(2)}'
+                        </text>
+                    </motion.g>
+                )}
+
                 {/* Power Pool Line Marker */}
                 <line
                     x1="0" y1={200 - powerPoolHeight}
