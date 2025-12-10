@@ -2,6 +2,7 @@
 import React from 'react';
 import LakeLevelsPanel from '@/components/LakeLevelsPanel';
 import GenerationSchedulePanel from '@/components/GenerationSchedulePanel';
+import LakeMap from '@/components/LakeMap';
 
 export default function Home() {
   return (
@@ -45,6 +46,9 @@ export default function Home() {
           </div>
 
           <div className="lg:col-span-4 space-y-6">
+            {/* Watershed Map */}
+            <LakeMap />
+
             {/* Quick Reference Card */}
             <div className="bg-zinc-900 rounded-xl shadow-lg border border-white/10 p-6">
               <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-6 flex items-center gap-2">
